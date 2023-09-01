@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections;
+using Photon.Pun;
 
 namespace AstronautPlayer
 {
 
-    public class AstronautPlayer : MonoBehaviour
+    public class AstronautPlayer : MonoBehaviourPun
     {
         private Animator anim;
         private Rigidbody rb;
@@ -21,15 +22,20 @@ namespace AstronautPlayer
 
         void Start()
         {
-            anim = gameObject.GetComponentInChildren<Animator>();
-            rb = gameObject.GetComponent<Rigidbody>();
+            if (photonView.IsMine)
+            {
+                anim = gameObject.GetComponentInChildren<Animator>();
+                rb = gameObject.GetComponent<Rigidbody>();
 
-            isGround = false;
-            isJump = false;
+                isGround = false;
+                isJump = false;
+            }
         }
 
-        void Update()
+        void FixedUpdate()
         {
+            if (!photonView.IsMine) { return; }
+
             Move();
             Turn();
 
@@ -74,7 +80,7 @@ namespace AstronautPlayer
 
         private void OnCollisionEnter(Collision collision)
         {
-            Debug.Log("ºÎµúÈû °¨Áö");
+            if (!photonView.IsMine) { return; }
 
             if (collision.collider != null)
             {
@@ -82,18 +88,6 @@ namespace AstronautPlayer
                 {
                     anim.SetTrigger("Land");
                     isGround = true;
-                }
-            }
-        }
-
-        private void OnCollisionExit(Collision collision)
-        {
-            if (collision.collider != null)
-            {
-                if (isJump == false)
-                {
-                    anim.SetTrigger("Fall");
-                    isGround = false;
                 }
             }
         }
