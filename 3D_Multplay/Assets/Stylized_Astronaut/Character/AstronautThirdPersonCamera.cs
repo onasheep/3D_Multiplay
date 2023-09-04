@@ -1,8 +1,9 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AstronautThirdPersonCamera : MonoBehaviour
+public class AstronautThirdPersonCamera : MonoBehaviourPun
 {
     private const float Y_ANGLE_MIN = 0.0f;
     private const float Y_ANGLE_MAX = 50.0f;
@@ -18,23 +19,37 @@ public class AstronautThirdPersonCamera : MonoBehaviour
 
     private void Start()
     {
-        camTransform = transform;
+        if (photonView.IsMine)
+        {
+            camTransform = transform;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
     }
 
     private void Update()
     {
-        currentX += Input.GetAxis("Mouse X");
-        currentY -= Input.GetAxis("Mouse Y");
+        if (photonView.IsMine)
+        {
+            currentX += Input.GetAxis("Mouse X");
+            currentY -= Input.GetAxis("Mouse Y");
 
-        currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
+            currentY = Mathf.Clamp(currentY, Y_ANGLE_MIN, Y_ANGLE_MAX);
+        }
     }
 
     private void LateUpdate()
     {
-        Vector3 dir = new Vector3(0, 0, -distance);
-        Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-        camTransform.position = lookAt.position + rotation * dir;
-        camTransform.LookAt(lookAt.position);
+        if (photonView.IsMine)
+        {
+            Vector3 dir = new Vector3(0, 0, -distance);
+            Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
+            camTransform.position = lookAt.position + rotation * dir;
+            camTransform.LookAt(lookAt.position);
+        }
     }
 }
 

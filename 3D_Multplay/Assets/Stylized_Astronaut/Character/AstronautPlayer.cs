@@ -34,24 +34,25 @@ namespace AstronautPlayer
 
         void FixedUpdate()
         {
-            if (!photonView.IsMine) { return; }
-
-            Move();
-            Turn();
-
-            if (Input.GetKeyUp(KeyCode.Space) && isGround)
+            if (photonView.IsMine)
             {
-                isJump = true;
+                Move();
+                Turn();
+
+                if (Input.GetKeyUp(KeyCode.Space) && isGround)
+                {
+                    isJump = true;
+                }
+
+                if (isJump)
+                {
+                    isJump = false;
+
+                    Jump();
+                }
+
+                anim.SetBool("IsGround", isGround);
             }
-
-            if (isJump)
-            {
-                isJump = false;
-
-                Jump();
-            }
-
-            anim.SetBool("IsGround", isGround);
         }
 
         private void Move()
@@ -80,14 +81,15 @@ namespace AstronautPlayer
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (!photonView.IsMine) { return; }
-
-            if (collision.collider != null)
+            if (photonView.IsMine)
             {
-                if (isGround == false)
+                if (collision.collider != null)
                 {
-                    anim.SetTrigger("Land");
-                    isGround = true;
+                    if (isGround == false)
+                    {
+                        anim.SetTrigger("Land");
+                        isGround = true;
+                    }
                 }
             }
         }
