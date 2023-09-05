@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using Photon.Pun;
+using ExitGames.Client.Photon;
 
 namespace AstronautPlayer
 {
@@ -32,7 +33,7 @@ namespace AstronautPlayer
             }
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             if (photonView.IsMine)
             {
